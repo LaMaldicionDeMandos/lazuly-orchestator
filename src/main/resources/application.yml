@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: lazuly-orchestrator
+  data:
+    mongodb:
+      database: lazuly-orchestrator
+  cloud:
+    stream:
+      default-binder: kafka
+      bindings:
+        new_owner_input:
+          destination: newOwner
+          content-type: application/json
+          group: lazuly-orchestrator
+        new_user_input:
+          destination: newUser
+          content-type: application/json
+          group: lazuly-orchestrator
+        delete_user_input:
+          destination: deleteUser
+          content-type: application/json
+          group: lazuly-orchestrator
+        change_roles_input:
+          destination: changeRoles
+          content-type: application/json
+          group: lazuly-orchestrator
+app:
+  host: ${HOST}
+  security:
+    clientkey: ${JWT_SECRET}
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: ${HOST}:8761/eureka/
+#Setting the logging levels for the service
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+---
+spring:
+  profiles: developer
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+  cloud:
+    stream:
+      kafka:
+        binder:
+          zkNodes: localhost
+          brokers: localhost
+app:
+  secret: aidafrancoygeorgelosamo
+server:
+  port: 8083
+
+---
+spring:
+  profiles: staging
+  data:
+    mongodb:
+      uri: ${MONGO_DB_URI}
+  cloud:
+    stream:
+      kafka:
+        binder:
+          zkNodes: localhost
+          brokers: localhost
+app:
+  secret: ${INTERNAL_SECRET}
+server:
+  port: ${PORT}
